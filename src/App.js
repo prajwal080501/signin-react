@@ -2,13 +2,16 @@ import "./App.css";
 import React, { useState, useEffect } from "react";
 import Firebase from "./components/Firebase/Firebase";
 import Login from "./components/Login/Login";
+import firebase from "firebase";
+import "./components/Login/Login.css";
+import Hero from "./components/Hero/Hero";
 
 function App() {
   const [user, setUser] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
-  const [oasswordError, setPasswordError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [hasAccount, setHasAccount] = useState("");
 
   //functions
@@ -27,7 +30,7 @@ function App() {
     clearErrors();
 
     Firebase.auth()
-      .signInWtihEmailAndPassword(email, password)
+      .signInWithEmailAndPassword(email, password)
       .catch((err) => {
         switch (err.code) {
           case "auth/invalid-email":
@@ -64,7 +67,7 @@ function App() {
   };
 
   const authListner = () => {
-    Firebase.aut().onAuthStateChanged((user) => {
+    Firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         clearInputs();
         setUser(user);
@@ -78,9 +81,28 @@ function App() {
     authListner();
   }, []);
 
-  return <div className="App">
-    <Login email={email} setEmail={setEmail} password ={password} setPassword={setPassword}  />
-  </div>;
+  return (
+    <div className="App">
+      {user ? (
+        <Hero handleLogout={handleLogout} />
+      ) : (
+        <Login
+          email={email}
+          setEmail={setEmail}
+          password={password}
+          setPassword={setPassword}
+          handleLogin={handleLogin}
+          handleSignUp={handleSignUp}
+          hasAccount={hasAccount}
+          setHasAccount={setHasAccount}
+          emailError={emailError}
+          setEmailError={emailError}
+          passwordError={passwordError}
+          setPasswordError={passwordError}
+        />
+      )}
+    </div>
+  );
 }
 
 export default App;
